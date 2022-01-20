@@ -54,7 +54,6 @@ public class BlockServiceImpl implements BlockService {
             hash = hashBlock(block);
         }
         block.setBlockHash(hash);
-        System.out.println(block);
         return block;
 
     }

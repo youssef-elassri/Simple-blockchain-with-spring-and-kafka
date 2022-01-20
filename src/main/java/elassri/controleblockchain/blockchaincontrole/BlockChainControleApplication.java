@@ -33,59 +33,6 @@ public class BlockChainControleApplication {
     CommandLineRunner lineRunner(TransactionRepository transactionRepository, BlockRepository blockRepository
             , BlockChainRepository blockChainRepository, BlockChainService blockChainService){
         return args -> {
-            String wallet1="wallet1", wallet2="wallet2", wallet3="wallet3";
-
-            BlockChain blockChain = blockChainService.createBlockChain("YSF", 4, 12.5);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-            blockChainService.mineBlock(wallet1);
-
-
-//            blockChainService.getBalance(wallet1);
-//            blockChain.getBlocks().forEach(block -> {
-//                transactionRepository.saveAll(block.getTransactions());
-//            });
-
-
-
-//                Transaction tr1 = new Transaction(UUID.randomUUID().toString(), Date.from(Instant.now()), wallet2, wallet1, 1000.0);
-//                Transaction tr2 = new Transaction(UUID.randomUUID().toString(), Date.from(Instant.now()), wallet1, wallet2, 50.0);
-//                Transaction tr3 = new Transaction(UUID.randomUUID().toString(), Date.from(Instant.now()), wallet1, wallet3, 50.0);
-//                Transaction tr4 = new Transaction(UUID.randomUUID().toString(), Date.from(Instant.now()), wallet3, wallet1, 13.0);
-//
-//                List<Transaction> lstTransaction = new ArrayList<>();
-//                lstTransaction.add(tr1);
-//                lstTransaction.add(tr2);
-//                lstTransaction.add(tr3);
-//                lstTransaction.add(tr4);
-
-
-
-
-
-
-
         };
     }
 }

@@ -6,8 +6,10 @@ import elassri.controleblockchain.blockchaincontrole.entities.BlockChain;
 public interface BlockChainService {
 
     public BlockChain createBlockChain(String nom, int diff, double miningReward);
-    public void mineBlock(String addressMiner);
+    public Block mineBlock(String addressMiner);
     public Block getLastMinedBlock();
     public boolean blockChainIsValid();
     public double getBalance(String walletAddress);
+    public void addTransaction(String srcWallet, String distWallet, double amount);
+    public BlockChain getBlockChain();
 }

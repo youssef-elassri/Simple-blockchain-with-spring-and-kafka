@@ -3,22 +3,36 @@ package elassri.controleblockchain.blockchaincontrole.services;
 import elassri.controleblockchain.blockchaincontrole.entities.Block;
 import elassri.controleblockchain.blockchaincontrole.entities.BlockChain;
 import elassri.controleblockchain.blockchaincontrole.entities.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
+import elassri.controleblockchain.blockchaincontrole.repositories.BlockChainRepository;
+import elassri.controleblockchain.blockchaincontrole.repositories.BlockRepository;
+import elassri.controleblockchain.blockchaincontrole.repositories.TransactionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
+@Slf4j
 public class BlockChainServiceImpl implements BlockChainService {
 
     private List<Transaction> pendingTransactions;
+    private BlockService blockService;
     private BlockChain blockChain;
 
-    BlockService blockService;
+    private TransactionRepository transactionRepository;
+    private BlockRepository blockRepository;
+    private BlockChainRepository blockChainRepository;
 
-    public BlockChainServiceImpl(BlockService blockService) {
+
+
+    public BlockChainServiceImpl(BlockService blockService, TransactionRepository transactionRepository,
+                                 BlockRepository blockRepository, BlockChainRepository blockChainRepository)
+
+    {
         this.blockService = blockService;
+        this.transactionRepository = transactionRepository;
+        this.blockRepository = blockRepository;
+        this.blockChainRepository = blockChainRepository;
         this.pendingTransactions = new ArrayList<>();
 
     }
@@ -27,29 +41,42 @@ public class BlockChainServiceImpl implements BlockChainService {
     public BlockChain createBlockChain(String nom, int diff, double miningReward) {
         List<Block> blocks = new ArrayList<>();
         BlockChain blockChain = new BlockChain(UUID.randomUUID().toString(), nom, diff, miningReward, blocks);
-        blockChain.getBlocks().add(blockService.blockMine(pendingTransactions, "0", blockChain.getDiff()));
+        Block genesisBlock = blockService.blockMine(pendingTransactions, "0", blockChain.getDiff());
+        blockChain.getBlocks().add(genesisBlock);
+
+
+        blockRepository.save(genesisBlock);
+        blockChainRepository.save(blockChain);
         this.blockChain = blockChain;
         return blockChain;
     }
 
+
     @Override
-    public void mineBlock(String addressMiner) {
+    public Block mineBlock(String addressMiner){
         Block block = blockService.blockMine(pendingTransactions,
-                getLastMinedBlock().getBlockHash(),
-                blockChain.getDiff());
+                this.getLastMinedBlock().getBlockHash(),
+                this.blockChain.getDiff());
+        log.info("Block is mined ==> Nonce is "+block.getNonce());
         Transaction transaction = new Transaction(
                 UUID.randomUUID().toString(),
                 new Date(),
                 "MineReward",
                 addressMiner,
                 blockChain.getMiningReward()
-        );
+            );
+        blockRepository.save(block);
         blockChain.getBlocks().add(block);
-        //System.out.println(blockChain);
-        //Here, we should clear the pending transactions, I guess ............
-        pendingTransactions = new LinkedList<>();
+
+        blockChainRepository.save(blockChain);
+
+        transactionRepository.save(transaction);
+
         pendingTransactions.add(transaction);
+
+        return block;
     }
+
 
     @Override
     public Block getLastMinedBlock() {
@@ -80,7 +107,30 @@ public class BlockChainServiceImpl implements BlockChainService {
                 if (transaction.getAddress_src().equals(walletAddress)) balance-=transaction.getMontant();
             }
         }
-        System.out.println(balance);
         return balance;
+    }
+
+    @Override
+    public void addTransaction(String srcWallet, String distWallet, double amount) {
+        double srcBalance = this.getBalance(srcWallet);
+        if(srcBalance > amount){
+            Transaction transaction = new Transaction(
+                    UUID.randomUUID().toString(),
+                    new Date(),
+                    srcWallet,
+                    distWallet,
+                    amount
+            );
+
+            transactionRepository.save(transaction);
+            this.pendingTransactions.add(transaction);
+
+        }
+        else throw new RuntimeException("your balance is not sufficient");
+    }
+
+    @Override
+    public BlockChain getBlockChain() {
+        return blockChainRepository.findAll().get(0);
     }
 }
